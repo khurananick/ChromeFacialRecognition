@@ -46,29 +46,19 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
             context2.drawImage(video, 0, 0, canvas2.width, canvas2.height);
 
             // rendering boxes around all faces.
+            // this action below just renders the squares around all faces in the image.
             var fullFaceDescriptions = null;
             faceapi.detectAllFaces(canvas2).withFaceLandmarks().withFaceDescriptors().then(function(result) {
               fullFaceDescriptions = result;
-              //faceapi.draw.drawDetections(canvas, fullFaceDescriptions);
+              faceapi.draw.drawDetections(canvas, fullFaceDescriptions);
               //faceapi.draw.drawFaceLandmarks(canvas, fullFaceDescriptions);
             });
-
-            function runFaceMatchStuff(labeledFaceDescriptors) {
-              if(!fullFaceDescriptions) return;
-              var maxDescriptorDistance = 0.6;
-              var faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, maxDescriptorDistance);
-              var results = fullFaceDescriptions.map(fd => faceMatcher.findBestMatch(fd.descriptor));
-              results.forEach((bestMatch, i) => {
-                var box = fullFaceDescriptions[i].detection.box
-                var text = bestMatch.toString()
-                var drawBox = new faceapi.draw.DrawBox(box, { label: text })
-                drawBox.draw(canvas)
-              });
-            }
 
             var index = 0;
             var labels = ['sheldon1','leonard1'];
             var labeledFaceDescriptors = [];
+            // this function pulls down each png of celebrity faces from server (can move this to local too).
+            // each face is converted into an array of descriptors to match agains faces in the photo in the next function.
             function iterateLabels(index) {
               var label = labels[index];
               if(!label) {
@@ -88,6 +78,23 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
                 });
               });
             }
+
+            // once all the celebrity faces are convered to descriptor arrays,
+            // this function matches those descriptors to faces in the canvas tht was pulled from the video
+            // then renders the name of the celebrity on the canvas to be displayed over the vide0
+            function runFaceMatchStuff(labeledFaceDescriptors) {
+              if(!fullFaceDescriptions) return;
+              var maxDescriptorDistance = 0.6;
+              var faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, maxDescriptorDistance);
+              var results = fullFaceDescriptions.map(fd => faceMatcher.findBestMatch(fd.descriptor));
+              results.forEach((bestMatch, i) => {
+                var box = fullFaceDescriptions[i].detection.box
+                var text = bestMatch.toString()
+                var drawBox = new faceapi.draw.DrawBox(box, { label: text })
+                drawBox.draw(canvas)
+              });
+            }
+
             iterateLabels(index);
           });
         });
