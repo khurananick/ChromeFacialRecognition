@@ -61,12 +61,15 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
             runFaceMatchStuff(labeledFaceDescriptors);
             return;
           }
-          var img = document.createElement("img");
-          img.src = label.images[0];
-          faceapi.computeFaceDescriptor(img).then(function(descriptors) {
-            console.log(descriptors);
+          var imgs = [];
+          label.images.map(function(data) {
+            var img = document.createElement("img");
+            img.src = data;
+            imgs.push(img);
+          });
+          faceapi.computeFaceDescriptor(imgs).then(function(descriptors) {
             if(descriptors) {
-              labeledFaceDescriptors.push(new faceapi.LabeledFaceDescriptors(label.name, [descriptors]));
+              labeledFaceDescriptors.push(new faceapi.LabeledFaceDescriptors(label.name, descriptors));
               iterateLabels((index += 1));
             } else {
               console.log("no faces detected for ", label);
