@@ -1,5 +1,6 @@
 $ = jQuery;
 MODEL_URL = 'https://benerdy.net/models';
+ALL_LABELED_FACE_DESCRIPTORS = false;
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   if (request.method == "clickAction") {
@@ -46,7 +47,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         var fullFaceDescriptions = null;
         faceapi.detectAllFaces(canvas2).withFaceLandmarks().withFaceDescriptors().then(function(result) {
           fullFaceDescriptions = result;
-          faceapi.draw.drawDetections(canvas, fullFaceDescriptions);
+          //faceapi.draw.drawDetections(canvas, fullFaceDescriptions);
           //faceapi.draw.drawFaceLandmarks(canvas, fullFaceDescriptions);
         });
 
@@ -98,6 +99,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         // then renders the name of the celebrity on the canvas to be displayed over the vide0
         var attempts = 0;
         function runFaceMatchStuff(labeledFaceDescriptors) {
+          if(!ALL_LABELED_FACE_DESCRIPTORS) ALL_LABELED_FACE_DESCRIPTORS = labeledFaceDescriptors;
           if(!fullFaceDescriptions) {
             attempts += 1;
             if(attempts == 3) return;
@@ -108,14 +110,18 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
           var faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, maxDescriptorDistance);
           var results = fullFaceDescriptions.map(fd => faceMatcher.findBestMatch(fd.descriptor));
           results.forEach((bestMatch, i) => {
-            var box = fullFaceDescriptions[i].detection.box
-            var text = bestMatch.toString()
-            var drawBox = new faceapi.draw.DrawBox(box, { label: text })
-            drawBox.draw(canvas)
+            var box = fullFaceDescriptions[i].detection.box;
+            var text = bestMatch.toString();
+            if(!text.match("unknown")) {
+              var drawBox = new faceapi.draw.DrawBox(box, { label: text });
+              drawBox.draw(canvas)
+            }
           });
         }
 
-        iterateLabels(index);
+        if(ALL_LABELED_FACE_DESCRIPTORS)
+          runFaceMatchStuff(ALL_LABELED_FACE_DESCRIPTORS);
+        else iterateLabels(index);
       });
     }
 
