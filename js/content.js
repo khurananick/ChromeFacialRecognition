@@ -26,17 +26,66 @@ function loadRemoteImagesData() {
   $.ajax({
     url: PEOPLE_DATA_URL
   }).done(function(resp) {
-    startRecognitionInVideo(Object.values(resp));
+    //startRecognitionInVideo(Object.values(resp));
+    labelFaceDescriptions(Object.values(resp));
   });
 }
 
-// Step 3: Start listening to time update in video and matching faces.
-function startRecognitionInVideo(people) {
+// Step 3: Convert labeled images into data array
+function labelFaceDescriptions(people) {
+  var index = 0;
+  var labeledFaceDescriptors = [];
+  // this function pulls down each png of celebrity faces from server (can move this to local too).
+  // each face is converted into an array of descriptors to match agains faces in the photo in the next function.
+  function iterateLabels(index) {
+    var person = people[index];
+    if(!person) {
+      ALL_LABELED_FACE_DESCRIPTORS = labeledFaceDescriptors;
+      startRecognitionInVideo();
+      return;
+    }
+    if(person.descriptors) {
+      var descriptors = JSON.parse(person.descriptors);
+      for(var d_index in descriptors) {
+        descriptors[d_index] = Object.values(descriptors[d_index]);
+        descriptors[d_index] = new Float32Array(descriptors[d_index]);
+      }
+      labeledFaceDescriptors.push(new faceapi.LabeledFaceDescriptors(createLabel(person), descriptors));
+      iterateLabels((index += 1));
+    } else {
+      var imgs = [];
+      person.images.map(function(data) {
+        var img = document.createElement("img");
+        img.src = data;
+        imgs.push(img);
+      });
+      faceapi.computeFaceDescriptor(imgs).then(function(descriptors) {
+        if(descriptors) {
+          $.ajax({
+            method: "post",
+            url: ("https://benerdy.net/person/"+person.person_id+"/descriptors"),
+            data: { descriptors: JSON.stringify(descriptors) }
+          }).done(function(resp) {
+            labeledFaceDescriptors.push(new faceapi.LabeledFaceDescriptors(createLabel(person), descriptors));
+            iterateLabels((index += 1));
+          });
+        } else {
+          console.log("no faces detected for ", person);
+          iterateLabels((index += 1));
+        }
+      });
+    }
+  }
+
+  iterateLabels(index);
+}
+
+// Step 4: Start listening to time update in video and matching faces.
+function startRecognitionInVideo() {
   // get references to required items on screen.
   var $video = $("video");
   $video.css("position", "absolute");
   var video = $video[0];
-  var vh;
   // create a canvas element to overlay on video
   var canvas = document.createElement("canvas");
   canvas.style.position = "absolute";
@@ -78,60 +127,15 @@ function startRecognitionInVideo(people) {
       //faceapi.draw.drawFaceLandmarks(canvas, fullFaceDescriptions);
     });
 
-    var index = 0;
-    var labeledFaceDescriptors = [];
-    // this function pulls down each png of celebrity faces from server (can move this to local too).
-    // each face is converted into an array of descriptors to match agains faces in the photo in the next function.
-    function iterateLabels(index) {
-      var person = people[index];
-      if(!person) {
-        runFaceMatchStuff(labeledFaceDescriptors);
-        return;
-      }
-      if(person.descriptors) {
-        var descriptors = JSON.parse(person.descriptors);
-        for(var d_index in descriptors) {
-          descriptors[d_index] = Object.values(descriptors[d_index]);
-          descriptors[d_index] = new Float32Array(descriptors[d_index]);
-        }
-        labeledFaceDescriptors.push(new faceapi.LabeledFaceDescriptors(createLabel(person), descriptors));
-        iterateLabels((index += 1));
-      } else {
-        var imgs = [];
-        person.images.map(function(data) {
-          var img = document.createElement("img");
-          img.src = data;
-          imgs.push(img);
-        });
-        faceapi.computeFaceDescriptor(imgs).then(function(descriptors) {
-          if(descriptors) {
-            $.ajax({
-              method: "post",
-              url: ("https://benerdy.net/person/"+person.person_id+"/descriptors"),
-              data: { descriptors: JSON.stringify(descriptors) }
-            }).done(function(resp) {
-              labeledFaceDescriptors.push(new faceapi.LabeledFaceDescriptors(createLabel(person), descriptors));
-              iterateLabels((index += 1));
-            });
-          } else {
-            console.log("no faces detected for ", person);
-            iterateLabels((index += 1));
-          }
-        });
-      }
-    }
-
     // once all the celebrity faces are convered to descriptor arrays,
     // this function matches those descriptors to faces in the canvas tht was pulled from the video
     // then renders the name of the celebrity on the canvas to be displayed over the vide0
     var attempts = 0;
     function runFaceMatchStuff(labeledFaceDescriptors) {
-      if(!ALL_LABELED_FACE_DESCRIPTORS) ALL_LABELED_FACE_DESCRIPTORS = labeledFaceDescriptors;
       if(!fullFaceDescriptions) {
         attempts += 1;
         if(attempts == 3) return;
-        setTimeout(function() { runFaceMatchStuff(labeledFaceDescriptors); }, 1000);
-        return;
+        setTimeout(function() { runFaceMatchStuff(labeledFaceDescriptors); }, 1000); return;
       }
       var maxDescriptorDistance = 0.6;
       var faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, maxDescriptorDistance);
@@ -151,10 +155,7 @@ function startRecognitionInVideo(people) {
         }
       });
     }
-
-    if(ALL_LABELED_FACE_DESCRIPTORS)
-      runFaceMatchStuff(ALL_LABELED_FACE_DESCRIPTORS);
-    else iterateLabels(index);
+    if(ALL_LABELED_FACE_DESCRIPTORS) runFaceMatchStuff(ALL_LABELED_FACE_DESCRIPTORS);
   });
 }
 
