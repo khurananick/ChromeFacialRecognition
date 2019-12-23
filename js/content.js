@@ -8,7 +8,7 @@ function createLabel(obj) {
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   if (request.method == "clickAction") {
-    function start(labels) {
+    function start(people) {
       // get references to required items on screen.
       var $video = $("video");
       $video.css("position", "absolute");
@@ -60,22 +60,22 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         // this function pulls down each png of celebrity faces from server (can move this to local too).
         // each face is converted into an array of descriptors to match agains faces in the photo in the next function.
         function iterateLabels(index) {
-          var label = labels[index];
-          if(!label) {
+          var person = people[index];
+          if(!person) {
             runFaceMatchStuff(labeledFaceDescriptors);
             return;
           }
-          if(label.descriptors) {
-            var descriptors = JSON.parse(label.descriptors);
+          if(person.descriptors) {
+            var descriptors = JSON.parse(person.descriptors);
             for(var d_index in descriptors) {
               descriptors[d_index] = Object.values(descriptors[d_index]);
               descriptors[d_index] = new Float32Array(descriptors[d_index]);
             }
-            labeledFaceDescriptors.push(new faceapi.LabeledFaceDescriptors(createLabel(label), descriptors));
+            labeledFaceDescriptors.push(new faceapi.LabeledFaceDescriptors(createLabel(person), descriptors));
             iterateLabels((index += 1));
           } else {
             var imgs = [];
-            label.images.map(function(data) {
+            person.images.map(function(data) {
               var img = document.createElement("img");
               img.src = data;
               imgs.push(img);
@@ -84,14 +84,14 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
               if(descriptors) {
                 $.ajax({
                   method: "post",
-                  url: ("https://benerdy.net/person/"+label.person_id+"/descriptors"),
+                  url: ("https://benerdy.net/person/"+person.person_id+"/descriptors"),
                   data: { descriptors: JSON.stringify(descriptors) }
                 }).done(function(resp) {
-                  labeledFaceDescriptors.push(new faceapi.LabeledFaceDescriptors(createLabel(label), descriptors));
+                  labeledFaceDescriptors.push(new faceapi.LabeledFaceDescriptors(createLabel(person), descriptors));
                   iterateLabels((index += 1));
                 });
               } else {
-                console.log("no faces detected for ", label);
+                console.log("no faces detected for ", person);
                 iterateLabels((index += 1));
               }
             });
