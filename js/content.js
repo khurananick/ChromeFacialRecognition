@@ -148,8 +148,7 @@ function startRecognitionInVideo() {
           var labelBase64 = text.split(" ")[0];
           var info = atob(labelBase64).split("----");
           PEOPLE[labelBase64] = { name: info[0], imdb_url: info[1], timestamp: (new Date().getTime()) };
-          // TODO: Replace the below draw function with a function that updates
-          // the div overlay on the video with each celeberity.
+          // uncomment below lines to draw boxes around faces.
           var drawBox = new faceapi.draw.DrawBox(box, { label: info[0]});
           drawBox.draw(canvas)
         }
