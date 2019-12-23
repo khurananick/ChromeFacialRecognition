@@ -154,7 +154,17 @@ function startRecognitionInVideo() {
           drawBox.draw(canvas)
         }
       });
-      // console.log(PEOPLE); comment this out to see output of PEOPLE hash
+      // console.log(PEOPLE);
+      /* Sample Output
+      {
+        "SGFzc2FuIE1pbmhhai0tLS1odHRwczovL3d3dy5pbWRiLmNvbS9uYW1lL25tMzY1Mzc3OC8=": {
+          "name":"Hassan Minhaj","imdb_url":"https://www.imdb.com/name/nm3653778/","timestamp":1577123624692
+        },
+        "QW5kcmV3IFlhbmctLS0taHR0cHM6Ly93d3cuaW1kYi5jb20vbmFtZS9ubTgyMzMyNjMv": {
+          "name":"Andrew Yang","imdb_url":"https://www.imdb.com/name/nm8233263/","timestamp":1577123626194
+        }
+      }
+      */
     }
     if(ALL_LABELED_FACE_DESCRIPTORS) runFaceMatchStuff(ALL_LABELED_FACE_DESCRIPTORS);
   });
