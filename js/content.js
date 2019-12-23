@@ -57,31 +57,47 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         function iterateLabels(index) {
           var label = labels[index];
           if(!label) {
-            console.log(labeledFaceDescriptors);
             runFaceMatchStuff(labeledFaceDescriptors);
             return;
           }
-          var imgs = [];
-          label.images.map(function(data) {
-            var img = document.createElement("img");
-            img.src = data;
-            imgs.push(img);
-          });
-          faceapi.computeFaceDescriptor(imgs).then(function(descriptors) {
-            if(descriptors) {
-              labeledFaceDescriptors.push(new faceapi.LabeledFaceDescriptors(label.name, descriptors));
-              iterateLabels((index += 1));
-            } else {
-              console.log("no faces detected for ", label);
-              iterateLabels((index += 1));
+          if(label.descriptors) {
+            var descriptors = JSON.parse(label.descriptors);
+            for(var d_index in descriptors) {
+              descriptors[d_index] = Object.values(descriptors[d_index]);
+              descriptors[d_index] = new Float32Array(descriptors[d_index]);
             }
-          });
+            labeledFaceDescriptors.push(new faceapi.LabeledFaceDescriptors(label.name, descriptors));
+            iterateLabels((index += 1));
+          } else {
+            var imgs = [];
+            label.images.map(function(data) {
+              var img = document.createElement("img");
+              img.src = data;
+              imgs.push(img);
+            });
+            faceapi.computeFaceDescriptor(imgs).then(function(descriptors) {
+              if(descriptors) {
+                $.ajax({
+                  method: "post",
+                  url: ("https://benerdy.net/person/"+label.person_id+"/descriptors"),
+                  data: { descriptors: JSON.stringify(descriptors) }
+                }).done(function(resp) {
+                  labeledFaceDescriptors.push(new faceapi.LabeledFaceDescriptors(label.name, descriptors));
+                  iterateLabels((index += 1));
+                });
+              } else {
+                console.log("no faces detected for ", label);
+                iterateLabels((index += 1));
+              }
+            });
+          }
         }
 
         // once all the celebrity faces are convered to descriptor arrays,
         // this function matches those descriptors to faces in the canvas tht was pulled from the video
         // then renders the name of the celebrity on the canvas to be displayed over the vide0
         function runFaceMatchStuff(labeledFaceDescriptors) {
+          console.log(labeledFaceDescriptors);
           if(!fullFaceDescriptions) return;
           var maxDescriptorDistance = 0.6;
           var faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, maxDescriptorDistance);
