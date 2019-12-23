@@ -96,9 +96,14 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
         // once all the celebrity faces are convered to descriptor arrays,
         // this function matches those descriptors to faces in the canvas tht was pulled from the video
         // then renders the name of the celebrity on the canvas to be displayed over the vide0
+        var attempts = 0;
         function runFaceMatchStuff(labeledFaceDescriptors) {
-          console.log(labeledFaceDescriptors);
-          if(!fullFaceDescriptions) return;
+          if(!fullFaceDescriptions) {
+            attempts += 1;
+            if(attempts == 3) return;
+            setTimeout(function() { runFaceMatchStuff(labeledFaceDescriptors); }, 1000);
+            return;
+          }
           var maxDescriptorDistance = 0.6;
           var faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, maxDescriptorDistance);
           var results = fullFaceDescriptions.map(fd => faceMatcher.findBestMatch(fd.descriptor));
