@@ -2,6 +2,10 @@ $ = jQuery;
 MODEL_URL = 'https://benerdy.net/models';
 ALL_LABELED_FACE_DESCRIPTORS = false;
 
+function createLabel(obj) {
+  return btoa(obj.name + "----" + obj.imdb_url);
+}
+
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   if (request.method == "clickAction") {
     function start(labels) {
@@ -67,7 +71,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
               descriptors[d_index] = Object.values(descriptors[d_index]);
               descriptors[d_index] = new Float32Array(descriptors[d_index]);
             }
-            labeledFaceDescriptors.push(new faceapi.LabeledFaceDescriptors(label.name, descriptors));
+            labeledFaceDescriptors.push(new faceapi.LabeledFaceDescriptors(createLabel(label), descriptors));
             iterateLabels((index += 1));
           } else {
             var imgs = [];
@@ -83,7 +87,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
                   url: ("https://benerdy.net/person/"+label.person_id+"/descriptors"),
                   data: { descriptors: JSON.stringify(descriptors) }
                 }).done(function(resp) {
-                  labeledFaceDescriptors.push(new faceapi.LabeledFaceDescriptors(label.name, descriptors));
+                  labeledFaceDescriptors.push(new faceapi.LabeledFaceDescriptors(createLabel(label), descriptors));
                   iterateLabels((index += 1));
                 });
               } else {
@@ -113,7 +117,11 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
             var box = fullFaceDescriptions[i].detection.box;
             var text = bestMatch.toString();
             if(!text.match("unknown")) {
-              var drawBox = new faceapi.draw.DrawBox(box, { label: text });
+              var info = atob(text.split(" ")[0]).split("----");
+              var name = info[0];
+              var imdb_url = info[1];
+              console.log(name, imdb_url);
+              var drawBox = new faceapi.draw.DrawBox(box, { label: name});
               drawBox.draw(canvas)
             }
           });
