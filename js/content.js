@@ -121,6 +121,8 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
               var name = info[0];
               var imdb_url = info[1];
               console.log(name, imdb_url);
+              // TODO: Replace the below draw function with a function that updates
+              // the div overlay on the video with each celeberity.
               var drawBox = new faceapi.draw.DrawBox(box, { label: name});
               drawBox.draw(canvas)
             }
