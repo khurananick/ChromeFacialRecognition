@@ -2,7 +2,8 @@
 $ = jQuery;
 let MODEL_URL = 'https://benerdy.net/models';
 let PEOPLE_DATA_URL = 'https://benerdy.net/data';
-let ALL_LABELED_FACE_DESCRIPTORS = false;
+let ALL_LABELED_FACE_DESCRIPTORS = null;
+let PEOPLE = {};
 
 // Helper functions.
 function createLabel(obj) {
@@ -144,16 +145,16 @@ function startRecognitionInVideo() {
         var box = fullFaceDescriptions[i].detection.box;
         var text = bestMatch.toString();
         if(!text.match("unknown")) {
-          var info = atob(text.split(" ")[0]).split("----");
-          var name = info[0];
-          var imdb_url = info[1];
-          console.log(name, imdb_url);
+          var labelBase64 = text.split(" ")[0];
+          var info = atob(labelBase64).split("----");
+          PEOPLE[labelBase64] = { name: info[0], imdb_url: info[1], timestamp: (new Date().getTime()) };
           // TODO: Replace the below draw function with a function that updates
           // the div overlay on the video with each celeberity.
-          var drawBox = new faceapi.draw.DrawBox(box, { label: name});
+          var drawBox = new faceapi.draw.DrawBox(box, { label: info[0]});
           drawBox.draw(canvas)
         }
       });
+      // console.log(PEOPLE); comment this out to see output of PEOPLE hash
     }
     if(ALL_LABELED_FACE_DESCRIPTORS) runFaceMatchStuff(ALL_LABELED_FACE_DESCRIPTORS);
   });
