@@ -1,5 +1,6 @@
 // Global helper variables.
 $ = jQuery;
+let BASE_URL = 'https://benerdy.net';
 let MODEL_URL = 'https://benerdy.net/models';
 let PEOPLE_DATA_URL = 'https://benerdy.net/data';
 let ALL_LABELED_FACE_DESCRIPTORS = null;
@@ -24,11 +25,29 @@ function loadRemoteModels() {
 
 // Step 2: Load labeled base images data for people from remote.
 function loadRemoteImagesData() {
-  $.ajax({
-    url: PEOPLE_DATA_URL
-  }).done(function(resp) {
-    //startRecognitionInVideo(Object.values(resp));
-    labelFaceDescriptions(Object.values(resp.people));
+  var peopleData = null;
+  function downloadStoreAndRunNewData() {
+    $.ajax({
+      url: PEOPLE_DATA_URL
+    }).done(function(resp) {
+      var data = Object.values(resp.people);
+      chrome.storage.local.set({peopleData: data, peopleDataVersion: resp.version}, function() {
+        labelFaceDescriptions(data);
+      });
+    });
+  }
+  chrome.storage.local.get(['peopleData','peopleDataVersion'], function(result) {
+    if(!result.peopleData)
+      return downloadStoreAndRunNewData();
+    // check if on latest version.
+    $.ajax({
+      url: BASE_URL + "/data/version"
+    }).done(function(resp) {
+      if(resp.version == result.peopleDataVersion)
+        return labelFaceDescriptions(result.peopleData);
+      else
+        return downloadStoreAndRunNewData();
+    });
   });
 }
 
