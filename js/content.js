@@ -49,6 +49,10 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   }
   else if (request.method == "person") {
     PEOPLE[request.data.key] = request.data;
+    var ct = new Date().getTime();
+    for(var key in PEOPLE)
+      if((ct - PEOPLE[key].timestamp) > 10000)
+        delete(PEOPLE[key]);
     renderFaceDiv(PEOPLE)
   }
   sendResponse({message: "done"});
