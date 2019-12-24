@@ -144,7 +144,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
                 imdb_url: info[1],
                 website_url: info[1],
                 timestamp: (new Date().getTime()),
-                profile_img: (BASE_URL + "/person/"+info[2]+"/img/base64")
+                profile_img: (BASE_URL + "/person/"+info[2]+"/img")
               }
             }
             chrome.tabs.sendMessage(sender.tab.id, data, function() {});

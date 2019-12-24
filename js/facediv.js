@@ -50,7 +50,7 @@ function renderFaceDiv(PEOPLE) {
     faceDiv.style.width = (overlay.width()/5).toString() + 'pt';
 
     // faceImage
-    faceImage.src = person.key.base64;
+    faceImage.src = person.profile_img;
 
     linkToImdb.href = person.imdb_url
     linkToImdb.target = '_blank'
