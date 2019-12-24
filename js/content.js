@@ -28,7 +28,7 @@ function loadRemoteImagesData() {
     url: PEOPLE_DATA_URL
   }).done(function(resp) {
     //startRecognitionInVideo(Object.values(resp));
-    labelFaceDescriptions(Object.values(resp));
+    labelFaceDescriptions(Object.values(resp.people));
   });
 }
 
