@@ -10,7 +10,7 @@
     "matches": [
       "<all_urls>"
     ],
-    "js": ["/js/libs/jquery-2.1.4.min.js","/js/content.js"],
+    "js": ["/js/libs/jquery-2.1.4.min.js","/js/facediv.js","/js/content.js"],
     "run_at":"document_start"
   }],
   "permissions": [
