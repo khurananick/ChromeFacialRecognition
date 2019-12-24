@@ -55,6 +55,9 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     for(var key in PEOPLE)
       if((ct - PEOPLE[key].timestamp) > 10000)
         delete(PEOPLE[key]);
+
+    //var arr = Object.values(PEOPLE);
+    //arr = arr.sort((a, b) => (a.timestamp > b.timestamp) ? -1 : 1);
     renderFaceDiv(PEOPLE)
   }
   sendResponse({message: "done"});

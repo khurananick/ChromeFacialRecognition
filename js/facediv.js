@@ -30,9 +30,6 @@ function testClick(data) {
 }
 
 function renderFaceDiv(PEOPLE) {
-  var arr = Object.values(PEOPLE);
-  arr = arr.sort((a, b) => (a.timestamp > b.timestamp) ? -1 : 1);
-
   var overlay = $("#overlay");
   console.log(overlay.width)
   console.log(overlay.width()/2)
