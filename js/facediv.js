@@ -48,6 +48,8 @@ function renderFaceDiv(PEOPLE) {
     faceDiv.style.border = "1px solid blue"
     faceDiv.style.padding = "15pt"
     faceDiv.style.width = (overlay.width()/5).toString() + 'pt';
+    faceImage.style.width = "40px";
+    faceImage.style.margin = "0 10px 0 0";
 
     // faceImage
     faceImage.src = person.profile_img;
