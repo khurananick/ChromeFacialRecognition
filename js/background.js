@@ -15,7 +15,7 @@ let ALL_LABELED_FACE_DESCRIPTORS;
 
 // Helper functions.
 function createLabel(obj) {
-  return btoa(obj.name + "----" + obj.imdb_url);
+  return btoa(obj.name + "----" + obj.imdb_url + "----" + obj.person_id);
 }
 
 // Main functions to start the recognition process.
@@ -139,7 +139,11 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
             var data = {
               method: "person",
               data: {
-                key:labelBase64, name:info[0], imdb_url:info[1], timestamp:(new Date().getTime())
+                key: labelBase64,
+                name: info[0],
+                imdb_url: info[1],
+                timestamp: (new Date().getTime()),
+                profile_img: (BASE_URL + "/person/"+info[2]+"/img/base64")
               }
             }
             chrome.tabs.sendMessage(sender.tab.id, data, function() {});
