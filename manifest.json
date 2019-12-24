@@ -3,15 +3,14 @@
   "name": "Web Face Recognition",
   "version": "0.0.1",
   "background": {
-    "scripts": ["js/background.js"],
-    "persistent": true
+    "page": "/html/background.html"
   },
   "browser_action": {},
   "content_scripts": [{
     "matches": [
       "<all_urls>"
     ],
-    "js": ["/js/libs/jquery-2.1.4.min.js","/js/libs/tensorflow-tjfs.min.js","/js/libs/tensorflow-models-coco-ssd.min.js","/js/libs/face-api.min.js","/js/content.js"],
+    "js": ["/js/libs/jquery-2.1.4.min.js","/js/content.js"],
     "run_at":"document_start"
   }],
   "permissions": [
