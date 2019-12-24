@@ -49,7 +49,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   }
   else if (request.method == "person") {
     PEOPLE[request.data.key] = request.data;
-    renderFaceDiv()
+    renderFaceDiv(PEOPLE)
   }
   sendResponse({message: "done"});
 });

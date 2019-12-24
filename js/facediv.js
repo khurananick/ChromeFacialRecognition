@@ -1,5 +1,5 @@
 $ = jQuery;
-window.renderFaceDiv = function() {
+window.renderFaceDiv = function(PEOPLE) {
   var arr = Object.values(PEOPLE);
   arr = arr.sort((a, b) => (a.timestamp > b.timestamp) ? -1 : 1);
 
