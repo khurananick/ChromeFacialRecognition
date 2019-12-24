@@ -3,7 +3,8 @@
   "name": "Web Face Recognition",
   "version": "0.0.1",
   "background": {
-    "page": "/html/background.html"
+    "scripts": ["js/background.js"],
+    "persistent": true
   },
   "browser_action": {},
   "content_scripts": [{
@@ -16,6 +17,7 @@
   "permissions": [
     "<all_urls>",
     "storage",
+    "unlimitedStorage",
     "tabs",
     "activeTab",
     "webRequest",
