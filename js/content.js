@@ -29,7 +29,7 @@ function startRecognitionInVideo() {
     if(rendering) {
       rejected_count += 1;
       console.log("rejected render");
-      if(rejected_count > 10) rendering = false;
+      if(rejected_count > 4) rendering = false;
       else return;
     }
     console.log("rendering");

@@ -40,7 +40,7 @@ function renderFaceDiv(PEOPLE) {
     var faceDiv = document.createElement("div")
     var linkToImdb = document.createElement("a")
     var faceImage = document.createElement("img")
-    var faceName = document.createTextNode(person.name + ' (link to IMDB)')
+    var faceName = document.createTextNode(person.name)
 
     faceDiv.style.border = "1px solid blue"
     faceDiv.style.padding = "15pt"
