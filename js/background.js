@@ -127,7 +127,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
           setTimeout(function() { runFaceMatchStuff(labeledFaceDescriptors); }, 1000);
           return;
         }
-        var maxDescriptorDistance = 0.6;
+        var maxDescriptorDistance = 0.45;
         var faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, maxDescriptorDistance);
         var results = fullFaceDescriptions.map(fd => faceMatcher.findBestMatch(fd.descriptor));
         results.forEach((bestMatch, i) => {
@@ -135,14 +135,14 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
           var text = bestMatch.toString();
           if(!text.match("unknown")) {
             text = text.split(" ");
+            var distance = parseFloat(text[1].replace('(','').replace(')',''));
             var labelBase64 = text[0];
-            var pct = (parseFloat(text[1].replace('(','').replace(')','')) * 100).toFixed(0);
             var info = atob(labelBase64).split("----");
             var data = {
               method: "person",
               data: {
                 key: labelBase64,
-                name: (info[0] + ' ' + pct + '%'),
+                name: info[0],
                 imdb_url: info[1],
                 website_url: info[1],
                 person_id: info[2],

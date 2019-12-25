@@ -9,6 +9,7 @@ function startRecognitionInVideo() {
   var $video = $("video");
   $video.css("position", "absolute");
   var video = $video[0];
+  if(!video) return;
   // create div element to overlay video
   var overlay = document.createElement("div");
   overlay.id = "overlay";
@@ -46,8 +47,19 @@ function startRecognitionInVideo() {
   });
 }
 
+$(function() {
+  startRecognitionInVideo();
+  CLEANINTERVAL = setInterval(function() {
+    var ct = new Date().getTime();
+    for(var key in PEOPLE)
+      if((ct - PEOPLE[key].timestamp) > 8000)
+        delete(PEOPLE[key]);
+  }, 2000);
+});
+
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   if (request.method == "clickAction") {
+    return;
     startRecognitionInVideo();
     CLEANINTERVAL = setInterval(function() {
       var ct = new Date().getTime();
