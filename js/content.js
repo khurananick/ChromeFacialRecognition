@@ -52,9 +52,9 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     CLEANINTERVAL = setInterval(function() {
       var ct = new Date().getTime();
       for(var key in PEOPLE)
-        if((ct - PEOPLE[key].timestamp) > 3000)
+        if((ct - PEOPLE[key].timestamp) > 8000)
           delete(PEOPLE[key]);
-    }, 3000);
+    }, 2000);
   }
   else if (request.method == "person") {
     PEOPLE[request.data.key] = request.data;
