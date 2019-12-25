@@ -1,6 +1,7 @@
 // Global helper variables.
 $ = jQuery;
 let PEOPLE = {};
+let CLEANINTERVAL;
 
 // load a div for each unique face detected
 function startRecognitionInVideo() {
@@ -48,14 +49,15 @@ function startRecognitionInVideo() {
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   if (request.method == "clickAction") {
     startRecognitionInVideo();
+    CLEANINTERVAL = setInterval(function() {
+      var ct = new Date().getTime();
+      for(var key in PEOPLE)
+        if((ct - PEOPLE[key].timestamp) > 3000)
+          delete(PEOPLE[key]);
+    }, 3000);
   }
   else if (request.method == "person") {
     PEOPLE[request.data.key] = request.data;
-    var ct = new Date().getTime();
-    for(var key in PEOPLE)
-      if((ct - PEOPLE[key].timestamp) > 10000)
-        delete(PEOPLE[key]);
-
     //var arr = Object.values(PEOPLE);
     //arr = arr.sort((a, b) => (a.timestamp > b.timestamp) ? -1 : 1);
     renderFaceDiv(PEOPLE)

@@ -134,13 +134,15 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
           var box = fullFaceDescriptions[i].detection.box;
           var text = bestMatch.toString();
           if(!text.match("unknown")) {
-            var labelBase64 = text.split(" ")[0];
+            text = text.split(" ");
+            var labelBase64 = text[0];
+            var pct = (parseFloat(text[1].replace('(','').replace(')','')) * 100).toFixed(0);
             var info = atob(labelBase64).split("----");
             var data = {
               method: "person",
               data: {
                 key: labelBase64,
-                name: info[0],
+                name: (info[0] + ' ' + pct + '%'),
                 imdb_url: info[1],
                 website_url: info[1],
                 person_id: info[2],
