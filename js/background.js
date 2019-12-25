@@ -127,7 +127,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
           setTimeout(function() { runFaceMatchStuff(labeledFaceDescriptors); }, 1000);
           return;
         }
-        var maxDescriptorDistance = 0.45;
+        var maxDescriptorDistance = 0.49;
         var faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, maxDescriptorDistance);
         var results = fullFaceDescriptions.map(fd => faceMatcher.findBestMatch(fd.descriptor));
         results.forEach((bestMatch, i) => {
