@@ -9,18 +9,33 @@ function fadeOutOverlay(data) {
   overlay.style.opacity = '0.0'
 }
 
-showAdditionalInfo = (element) => {
-  var rightPaneTitle = document.getElementById("rightPaneTitle")
+function showAdditionalInfo(element) {
+  var elementId = element.target.id
 
-  element.style.backgroundColor = "rgba(0, 0, 0, 0.7)"
-  element.style.border = "1px solid blue"
+  // if((elementId == null || elementId == '') && (element.toElement.nodeName == "IMG" || element.toElement.nodeName == "SPAN")) {
+  if(elementId == null || elementId == '') {
+    elementId = element.fromElement.id
+  }
+
+  var hoverDiv = document.getElementById(elementId)
+  hoverDiv.style.backgroundColor = "rgba(0, 0, 0, 0.7)"
+  hoverDiv.style.border = "1px solid blue"
+  hoverDiv.style.cursor = "pointer"
+  hoverDiv = null
 }
 
-hideAdditionalInfo = (element) => {
-  var rightPaneTitle = document.getElementById("rightPaneTitle")
+function hideAdditionalInfo(element) {
+  var elementId = element.target.id
 
-  element.style.backgroundColor = "rgba(0, 0, 0, 0.2)"
-  element.style.border = "1px solid rgba(0, 0, 0, 0.2)"
+  if(elementId == null || elementId == '') {
+    elementId = element.fromElement.id
+  }
+
+  var hoverDiv = document.getElementById(elementId)
+  hoverDiv.style.backgroundColor = "rgba(0, 0, 0, 0.2)"
+  hoverDiv.style.border = "1px solid rgba(0, 0, 0, 0.2)"
+  hoverDiv.style.cursor = "auto"
+  hoverDiv = null
 }
 
 function renderFaceDiv(PEOPLE) {
@@ -46,8 +61,13 @@ function renderFaceDiv(PEOPLE) {
     // faceDiv.style.width = (overlay.width()/5).toString() + 'pt';
     // faceDiv.style.width = (overlay.style.width/2).toString() + 'pt';
 
-    faceDiv.onmouseover = () => showAdditionalInfo(faceDiv)
-    faceDiv.onmouseout = () => hideAdditionalInfo(faceDiv)
+    faceDiv.onmouseover = (element) => {
+      showAdditionalInfo(element)
+    }
+
+    faceDiv.onmouseout = (element) => {
+      hideAdditionalInfo(element)
+    }
 
     // faceImage
     faceImage.src = person.profile_img;
@@ -67,10 +87,9 @@ function renderFaceDiv(PEOPLE) {
     // linkToImdb.appentChild(imdbUrlText)
 
     // add content to faceDiv
-    faceDiv.appendChild(linkToImdb)
+    // faceDiv.appendChild(linkToImdb)
 
     // add faceDiv to overlay
-    var overlayElement = document.getElementById("overlay");
-    overlayElement.appendChild(faceDiv)
+    overlay.append(faceDiv)
   }
 }
