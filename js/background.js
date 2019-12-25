@@ -78,28 +78,6 @@ function labelFaceDescriptions(people) {
       }
       labeledFaceDescriptors.push(new faceapi.LabeledFaceDescriptors(createLabel(person), descriptors));
       iterateLabels((index += 1));
-    } else {
-      var imgs = [];
-      person.images.map(function(data) {
-        var img = document.createElement("img");
-        img.src = data;
-        imgs.push(img);
-      });
-      faceapi.computeFaceDescriptor(imgs).then(function(descriptors) {
-        if(descriptors) {
-          $.ajax({
-            method: "post",
-            url: ("https://benerdy.net/person/"+person.person_id+"/descriptors"),
-            data: { descriptors: JSON.stringify(descriptors) }
-          }).done(function(resp) {
-            labeledFaceDescriptors.push(new faceapi.LabeledFaceDescriptors(createLabel(person), descriptors));
-            iterateLabels((index += 1));
-          });
-        } else {
-          console.log("no faces detected for ", person);
-          iterateLabels((index += 1));
-        }
-      });
     }
   }
 
