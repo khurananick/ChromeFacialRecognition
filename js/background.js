@@ -1,3 +1,13 @@
+chrome.browserAction.onClicked.addListener(function(tab) {
+  chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+    var data = { method: 'clickAction' };
+    chrome.tabs.sendMessage(tabs[0].id, data, function(response) {
+      if(response.message=='settings')
+        chrome.tabs.create({ url: "html/settings.html" });
+    });
+  });
+});
+
 let BASE_URL = 'https://benerdy.net';
 let MODEL_URL = 'https://benerdy.net/models';
 let PEOPLE_DATA_URL = 'https://benerdy.net/data';
@@ -11,7 +21,6 @@ function createLabel(obj) {
 // Main functions to start the recognition process.
 // Step 1: Load pre-trained remote models from server.
 function loadRemoteModels() {
-  ALL_LABELED_FACE_DESCRIPTORS = null;
   faceapi.loadSsdMobilenetv1Model(MODEL_URL).then(function() {
     faceapi.loadFaceLandmarkModel(MODEL_URL).then(function() {
       faceapi.loadFaceRecognitionModel(MODEL_URL).then(function() {
@@ -130,24 +139,12 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   }
 });
 
-loadRemoteModels(); // first thing when the extension is loaded.
+loadRemoteModels();
 
-chrome.browserAction.onClicked.addListener(function(tab) {
-  chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-    loadRemoteModels(); // basically reloads everything.
-    var data = { method: 'clickAction' };
-    chrome.tabs.sendMessage(tabs[0].id, data, function(response) {
-      if(response.message=='settings')
-        chrome.tabs.create({ url: "html/settings.html" });
-    });
-  });
-});
-
-/*
 chrome.alarms.create("reloadModels", {periodInMinutes: (60*6)})
 chrome.alarms.onAlarm.addListener(function(alarm) {
   if(alarm.name == "reloadModels") {
-    loadRemoteModels(); // basically reloads everything.
+    ALL_LABELED_FACE_DESCRIPTORS = null;
+    loadRemoteModels();
   }
 });
-*/
