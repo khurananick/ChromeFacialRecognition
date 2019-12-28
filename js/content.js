@@ -32,6 +32,8 @@ function startRecognitionInVideo() {
   var rejected_count = 0;
   var rendering = false;
   video.addEventListener("timeupdate", function(e) {
+    overlay.style.width = $video.width().toString() + 'pt';
+    overlay.style.height = $video.height().toString() + 'pt';
     if(rendering) {
       rejected_count += 1;
       console.log("rejected render");
@@ -55,9 +57,12 @@ $(function() {
   startRecognitionInVideo();
   CLEANINTERVAL = setInterval(function() {
     var ct = new Date().getTime();
-    for(var key in PEOPLE)
-      if((ct - PEOPLE[key].timestamp) > 8000)
+    for(var key in PEOPLE) {
+      if((ct - PEOPLE[key].timestamp) > 8000) {
         delete(PEOPLE[key]);
+        renderFaceDiv(PEOPLE);
+      }
+    }
   }, 2000);
 });
 
