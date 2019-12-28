@@ -19,7 +19,7 @@ function showAdditionalInfo(element) {
 
   var hoverDiv = document.getElementById(elementId)
   hoverDiv.style.backgroundColor = "rgba(0, 0, 0, 0.7)"
-  hoverDiv.style.border = "1px solid blue"
+  //hoverDiv.style.border = "1px solid blue"
   hoverDiv.style.cursor = "pointer"
   hoverDiv = null
 }
@@ -50,9 +50,9 @@ function renderFaceDiv(PEOPLE) {
     faceName.textContent = person.name
 
     faceDiv.id = index
-    faceDiv.style.border = "1px solid rgba(0, 0, 0, 0.2)"
+    //faceDiv.style.border = "1px solid rgba(0, 0, 0, 0.2)"
+    //faceDiv.style.borderRadius = "1pt"
     faceDiv.style.padding = "5pt 5pt 1pt"
-    faceDiv.style.borderRadius = "1pt"
     faceDiv.style.margin = "5pt"
     faceDiv.style.fontSize = "13pt"
     faceDiv.style.backgroundColor = "rgba(0, 0, 0, 0.2)"
