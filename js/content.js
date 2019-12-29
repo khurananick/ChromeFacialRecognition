@@ -18,6 +18,7 @@ function startRecognitionInVideo() {
   overlay.style.opacity = "0.9";
   overlay.onmouseover = () => fadeInOverlay()
   overlay.onmouseout = () => fadeOutOverlay()
+  overlay.style.transition = '0.5s'
   overlay.style.margin = "0 auto";
   overlay.style.width = $video.width().toString() + 'pt';
   overlay.style.height = $video.height().toString() + 'pt';

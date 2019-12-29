@@ -1,4 +1,15 @@
 $ = jQuery;
+
+var timeout;
+
+document.onmousemove = function(){
+  clearTimeout(timeout)
+
+  timeout = setTimeout(function(){
+    fadeOutOverlay()
+  }, 5000)
+}
+
 function fadeInOverlay(data) {
   var overlay = document.getElementById("overlay")
   overlay.style.opacity = '0.9'
