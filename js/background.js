@@ -105,7 +105,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
           setTimeout(function() { runFaceMatchStuff(labeledFaceDescriptors); }, 1000);
           return;
         }
-        var maxDescriptorDistance = 0.55;
+        var maxDescriptorDistance = 0.52;
         var faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, maxDescriptorDistance);
         var results = fullFaceDescriptions.map(fd => faceMatcher.findBestMatch(fd.descriptor));
         results.forEach((bestMatch, i) => {
@@ -141,7 +141,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 
 loadRemoteModels();
 
-chrome.alarms.create("reloadModels", {periodInMinutes: (60*6)})
+chrome.alarms.create("reloadModels", {periodInMinutes: (5)})
 chrome.alarms.onAlarm.addListener(function(alarm) {
   if(alarm.name == "reloadModels") {
     ALL_LABELED_FACE_DESCRIPTORS = null;
