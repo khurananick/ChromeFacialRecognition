@@ -33,9 +33,13 @@ function hideAdditionalInfo(element) {
 
   var hoverDiv = document.getElementById(elementId)
   hoverDiv.style.backgroundColor = "rgba(0, 0, 0, 0.2)"
-  hoverDiv.style.border = "1px solid rgba(0, 0, 0, 0.2)"
+  // hoverDiv.style.border = "1px solid rgba(0, 0, 0, 0.2)"
   hoverDiv.style.cursor = "auto"
   hoverDiv = null
+}
+
+function clickOpenNewTab(person) {
+  window.open(person.website_url, '_blank')
 }
 
 function renderFaceDiv(PEOPLE) {
@@ -67,6 +71,10 @@ function renderFaceDiv(PEOPLE) {
 
     faceDiv.onmouseout = (element) => {
       hideAdditionalInfo(element)
+    }
+
+    faceDiv.onclick = (element) => {
+      clickOpenNewTab(person)
     }
 
     // faceImage
