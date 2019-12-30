@@ -9,11 +9,11 @@ document.onmousemove = function(){
   }, 5000)
 }
 
-function fadeInOverlay(data) {
+function fadeInOverlay(overlay) {
   if(parentOverlay) parentOverlay.style.opacity = '0.9'
 }
 
-function fadeOutOverlay(data) {
+function fadeOutOverlay(overlay) {
   if(parentOverlay) parentOverlay.style.opacity = '0.0'
 }
 
@@ -46,17 +46,23 @@ function hideAdditionalInfo(element) {
   hoverDiv = null
 }
 
-function clickOpenNewTab(person) {
-  if(parentElement)
-    if(parentElement.tagName == "VIDEO")
-      parentElement.pause();
+function clickOpenNewTab(event, person) {
+
+  if(parentElement) {
+    if(parentElement.tagName == "VIDEO") {
+      if(parentElement.paused) {
+        event.stopPropagation()
+      }
+    }
+  }
+
   window.open(person.website_url, '_blank')
 }
 
-function renderFaceDiv(people, parentOverlay, parentElement) {
-  parentOverlay = parentOverlay;
+function renderFaceDiv(people, parentOverlayArg, parentElementArg) {
+  parentOverlay = parentOverlayArg;
   parentOverlay.html("");
-  parentElement = parentElement;
+  parentElement = parentElementArg;
 
   for(var index in people) {
     var person = people[index];
@@ -86,7 +92,7 @@ function renderFaceDiv(people, parentOverlay, parentElement) {
     }
 
     faceDiv.onclick = (element) => {
-      clickOpenNewTab(person)
+      clickOpenNewTab(element, person)
     }
 
     // faceImage
