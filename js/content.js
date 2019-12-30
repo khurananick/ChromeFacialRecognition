@@ -26,8 +26,6 @@ function startRecognitionInVideo() {
   overlay.style.margin = "0 auto";
   overlay.style.width = $video.width().toString() + 'pt';
   overlay.style.height = $video.height().toString() + 'pt';
-  // overlay.style.width = video.width
-  // overlay.style.height = video.height
 
   $video.parent().append(overlay);
   // create a canvas element to convert current video frame into an still
@@ -37,6 +35,7 @@ function startRecognitionInVideo() {
   var rejected_count = 0;
   var rendering = false;
   $video.on("timeupdate", function(e) {
+    video = e.target;
     overlay.style.width = $video.width().toString() + 'pt';
     overlay.style.height = $video.height().toString() + 'pt';
     if(rendering) {
@@ -51,7 +50,6 @@ function startRecognitionInVideo() {
     canvas2.width = $video.width();
     canvas2.height = $video.height();
     context2.drawImage(video, 0, 0, canvas2.width, canvas2.height);
-
     chrome.runtime.sendMessage({method:"runRecognitionOnCanvas",base64:canvas2.toDataURL()}, function(response) {
       // do nothing.
     });
