@@ -105,7 +105,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
           setTimeout(function() { runFaceMatchStuff(labeledFaceDescriptors); }, 1000);
           return;
         }
-        var maxDescriptorDistance = 0.55;
+        var maxDescriptorDistance = 0.52;
         var faceMatcher = new faceapi.FaceMatcher(labeledFaceDescriptors, maxDescriptorDistance);
         var results = fullFaceDescriptions.map(fd => faceMatcher.findBestMatch(fd.descriptor));
         results.forEach((bestMatch, i) => {
@@ -117,6 +117,8 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
             var labelBase64 = text[0];
             var info = atob(labelBase64).split("----");
             var data = {
+              overlay_id: request.overlay_id,
+              elem_ref: request.elem_ref,
               method: "person",
               data: {
                 key: labelBase64,

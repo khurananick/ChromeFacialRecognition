@@ -58,8 +58,51 @@ function startRecognitionInVideo() {
   });
 }
 
+function getBase64Image(img) {
+  var canvas = document.createElement("canvas");
+  canvas.width = img.width;
+  canvas.height = img.height;
+  var ctx = canvas.getContext("2d");
+  ctx.drawImage(img, 0, 0);
+  return canvas.toDataURL();
+}
+
+function startRecognitionInImages() {
+  $("img").each(function(index, elem) {
+    if(elem.width > 250) {
+      console.log(elem);
+      let $elem = $(elem);
+      elem.setAttribute('crossOrigin', 'anonymous');
+      elem.dataset.facrec_ref_id = ("facerec." + (new Date().getTime()));
+      // create div element to overlay video
+      let imgOverlay = document.createElement("div");
+      $imgOverlay = $(imgOverlay);
+      imgOverlay.id = ("facerec." + (new Date().getTime()));
+      imgOverlay.style.position = "absolute";
+      imgOverlay.style.opacity = "0.9";
+      imgOverlay.onmouseover = () => fadeInOverlay()
+      imgOverlay.onmouseout = () => fadeOutOverlay()
+      imgOverlay.style.transition = '0.5s'
+      imgOverlay.style.margin = "0 auto";
+      imgOverlay.style.width = $elem.width().toString() + 'pt';
+      imgOverlay.style.height = $elem.height().toString() + 'pt';
+      chrome.runtime.sendMessage(
+        {
+          method:"runRecognitionOnCanvas",
+          base64:getBase64Image(elem),
+          overlay_id:imgOverlay.id,
+          elem_ref: elem.dataset.facrec_ref_id
+        },
+        function(response) {
+          // do nothing.
+        });
+    }
+  });
+}
+
 $(function() {
   startRecognitionInVideo();
+  startRecognitionInImages();
   cleanInterval = setInterval(function() {
     var ct = new Date().getTime();
     for(var key in people) {
@@ -76,8 +119,15 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     // do nothing.
   }
   else if (request.method == "person") {
-    people[request.data.key] = request.data;
-    renderFaceDiv(people, $overlay, video)
+    if(!request.overlay_id) {
+      people[request.data.key] = request.data;
+      renderFaceDiv(people, $overlay, video)
+    } else {
+      var elem = $("[data-facrec_ref_id='"+request.elem_ref+"']")[0];
+      var $overlay = $("div#"+request.elem_id);
+      people[request.data.key] = request.data;
+      renderFaceDiv(people, $overlay, video)
+    }
   }
   sendResponse({message: "done"});
 });
