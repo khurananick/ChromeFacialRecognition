@@ -36,7 +36,7 @@ function startRecognitionInVideo() {
   // reusable vars to track during the video update callbacks.
   var rejected_count = 0;
   var rendering = false;
-  video.addEventListener("timeupdate", function(e) {
+  $video.on("timeupdate", function(e) {
     overlay.style.width = $video.width().toString() + 'pt';
     overlay.style.height = $video.height().toString() + 'pt';
     if(rendering) {
