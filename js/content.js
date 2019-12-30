@@ -20,8 +20,8 @@ function startRecognitionInVideo() {
   overlay.id = "overlay";
   overlay.style.position = "absolute";
   overlay.style.opacity = "0.9";
-  overlay.onmouseover = () => fadeInOverlay()
-  overlay.onmouseout = () => fadeOutOverlay()
+  overlay.onmouseover = () => fadeInOverlay(overlay)
+  overlay.onmouseout = () => fadeOutOverlay(overlay)
   overlay.style.transition = '0.5s'
   overlay.style.margin = "0 auto";
   overlay.style.width = $video.width().toString() + 'pt';
