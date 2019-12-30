@@ -10,7 +10,9 @@ function startRecognitionInVideo() {
   $video = $("video");
   $video.css("position", "absolute");
   video = $video[0];
-  if(!video) return;
+  if(!video) {
+    return setTimeout(function() { startRecognitionInVideo(); }, 5000);
+  }
 
   // create div element to overlay video
   overlay = document.createElement("div");
@@ -71,14 +73,7 @@ $(function() {
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   if (request.method == "clickAction") {
-    return;
-    startRecognitionInVideo();
-    cleanInterval = setInterval(function() {
-      var ct = new Date().getTime();
-      for(var key in people)
-        if((ct - people[key].timestamp) > 8000)
-          delete(people[key]);
-    }, 2000);
+    // do nothing.
   }
   else if (request.method == "person") {
     people[request.data.key] = request.data;
