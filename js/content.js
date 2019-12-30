@@ -59,7 +59,7 @@ function startRecognitionInVideo() {
 $(function() {
   startRecognitionInVideo();
   cleanInterval = setInterval(function() {
-    if(video.paused) return;
+    if(!video || video.paused) return;
     var ct = new Date().getTime();
     for(var key in people) {
       if((ct - people[key].timestamp) > 8000) {
