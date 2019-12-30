@@ -26,7 +26,7 @@ function showAdditionalInfo(element) {
   }
 
   var hoverDiv = document.getElementById(elementId)
-  hoverDiv.style.backgroundColor = "rgba(0, 0, 0, 0.7)"
+  // hoverDiv.style.backgroundColor = "rgba(0, 0, 0, 0.7)"
   //hoverDiv.style.border = "1px solid blue"
   hoverDiv.style.cursor = "pointer"
   hoverDiv = null
@@ -40,7 +40,7 @@ function hideAdditionalInfo(element) {
   }
 
   var hoverDiv = document.getElementById(elementId)
-  hoverDiv.style.backgroundColor = "rgba(0, 0, 0, 0.2)"
+  // hoverDiv.style.backgroundColor = "rgba(0, 0, 0, 0.2)"
   // hoverDiv.style.border = "1px solid rgba(0, 0, 0, 0.2)"
   hoverDiv.style.cursor = "auto"
   hoverDiv = null
