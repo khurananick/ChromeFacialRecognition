@@ -9,11 +9,13 @@ document.onmousemove = function(){
   }, 5000)
 }
 
-function fadeInOverlay(overlay) {
+function fadeInOverlay(parentOverlayArg) {
+  parentOverlay = parentOverlayArg
   if(parentOverlay) parentOverlay.style.opacity = '0.9'
 }
 
-function fadeOutOverlay(overlay) {
+function fadeOutOverlay(parentOverlayArg) {
+  parentOverlay = parentOverlayArg
   if(parentOverlay) parentOverlay.style.opacity = '0.0'
 }
 
@@ -47,7 +49,6 @@ function hideAdditionalInfo(element) {
 }
 
 function clickOpenNewTab(event, person) {
-
   if(parentElement) {
     if(parentElement.tagName == "VIDEO") {
       if(parentElement.paused) {
