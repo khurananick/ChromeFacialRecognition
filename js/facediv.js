@@ -1,6 +1,5 @@
 $ = jQuery;
-
-var timeout;
+let timeout, parentOverlay, parentElement;
 
 document.onmousemove = function(){
   clearTimeout(timeout)
@@ -11,13 +10,11 @@ document.onmousemove = function(){
 }
 
 function fadeInOverlay(data) {
-  var overlay = document.getElementById("overlay")
-  overlay.style.opacity = '0.9'
+  if(parentOverlay) parentOverlay.style.opacity = '0.9'
 }
 
 function fadeOutOverlay(data) {
-  var overlay = document.getElementById("overlay")
-  overlay.style.opacity = '0.0'
+  if(parentOverlay) parentOverlay.style.opacity = '0.0'
 }
 
 function showAdditionalInfo(element) {
@@ -50,15 +47,19 @@ function hideAdditionalInfo(element) {
 }
 
 function clickOpenNewTab(person) {
+  if(parentElement)
+    if(parentElement.tagName == "VIDEO")
+      parentElement.pause();
   window.open(person.website_url, '_blank')
 }
 
-function renderFaceDiv(PEOPLE) {
-  var overlay = $("#overlay");
-  overlay.html("");
+function renderFaceDiv(people, parentOverlay, parentElement) {
+  parentOverlay = parentOverlay;
+  parentOverlay.html("");
+  parentElement = parentElement;
 
-  for(var index in PEOPLE) {
-    var person = PEOPLE[index];
+  for(var index in people) {
+    var person = people[index];
     var faceDiv = document.createElement("div")
     var faceImage = document.createElement("img")
     var faceName = document.createElement("span")
@@ -109,6 +110,6 @@ function renderFaceDiv(PEOPLE) {
     // faceDiv.appendChild(linkToImdb)
 
     // add faceDiv to overlay
-    overlay.append(faceDiv)
+    parentOverlay.append(faceDiv)
   }
 }

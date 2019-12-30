@@ -1,18 +1,20 @@
 // Global helper variables.
 $ = jQuery;
-let PEOPLE = {};
-let CLEANINTERVAL;
+let people = {};
+let cleanInterval;
+let $overlay, overlay, $video, video;
 
 // load a div for each unique face detected
 function startRecognitionInVideo() {
   // get references to required items on screen.
-  var $video = $("video");
+  $video = $("video");
   $video.css("position", "absolute");
-  var video = $video[0];
+  video = $video[0];
   if(!video) return;
 
   // create div element to overlay video
-  var overlay = document.createElement("div");
+  overlay = document.createElement("div");
+  $overlay = $(overlay);
   overlay.id = "overlay";
   overlay.style.position = "absolute";
   overlay.style.opacity = "0.9";
@@ -56,12 +58,12 @@ function startRecognitionInVideo() {
 
 $(function() {
   startRecognitionInVideo();
-  CLEANINTERVAL = setInterval(function() {
+  cleanInterval = setInterval(function() {
     var ct = new Date().getTime();
-    for(var key in PEOPLE) {
-      if((ct - PEOPLE[key].timestamp) > 8000) {
-        delete(PEOPLE[key]);
-        renderFaceDiv(PEOPLE);
+    for(var key in people) {
+      if((ct - people[key].timestamp) > 8000) {
+        delete(people[key]);
+        renderFaceDiv(people, $overlay, video);
       }
     }
   }, 2000);
@@ -71,18 +73,16 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   if (request.method == "clickAction") {
     return;
     startRecognitionInVideo();
-    CLEANINTERVAL = setInterval(function() {
+    cleanInterval = setInterval(function() {
       var ct = new Date().getTime();
-      for(var key in PEOPLE)
-        if((ct - PEOPLE[key].timestamp) > 8000)
-          delete(PEOPLE[key]);
+      for(var key in people)
+        if((ct - people[key].timestamp) > 8000)
+          delete(people[key]);
     }, 2000);
   }
   else if (request.method == "person") {
-    PEOPLE[request.data.key] = request.data;
-    //var arr = Object.values(PEOPLE);
-    //arr = arr.sort((a, b) => (a.timestamp > b.timestamp) ? -1 : 1);
-    renderFaceDiv(PEOPLE)
+    people[request.data.key] = request.data;
+    renderFaceDiv(people, $overlay, video)
   }
   sendResponse({message: "done"});
 });
