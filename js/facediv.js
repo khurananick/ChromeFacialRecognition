@@ -1,10 +1,12 @@
 let mousemoveTimeout, lastMousemovement, mouseEntered, $box, $tar;
 
 function renderFaceDiv(people, $parentOverlay, parentElement) {
+  var arr = Object.values(people);
+  arr = arr.sort((a, b) => (a.timestamp > b.timestamp) ? -1 : 1);
   $parentOverlay.html("");
 
-  for(var index in people) {
-    var person = people[index];
+  for(var index in arr) {
+    var person = arr[index];
     var box = "";
     box += "<div class='fc-facecard' style='background-color:#000; opacity:0.8; margin:5px; padding:10px; width:250px; overflow:hidden;'>";
     box +=  "<div>";
