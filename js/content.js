@@ -16,18 +16,12 @@ function startRecognitionInVideo() {
 
   // create div element to overlay video
   overlay = document.createElement("div");
-  $overlay = $(overlay);
   overlay.id = "overlay";
-  overlay.style.position = "absolute";
-  overlay.style.opacity = "0.9";
-  overlay.onmouseover = () => fadeInOverlay(overlay)
-  overlay.onmouseout = () => fadeOutOverlay(overlay)
-  overlay.style.transition = '0.5s'
-  overlay.style.margin = "0 auto";
-  overlay.style.width = $video.width().toString() + 'pt';
-  overlay.style.height = $video.height().toString() + 'pt';
-
+  $overlay = $(overlay);
+  $overlay.css({ position: 'absolute', margin: '0 auto' });
+  $overlay.addClass("fc-overlay");
   $video.parent().append(overlay);
+
   // create a canvas element to convert current video frame into an still
   var canvas2 = document.createElement("canvas");
   var context2 = canvas2.getContext("2d");

@@ -1,122 +1,54 @@
-$ = jQuery;
-let timeout, parentOverlay, parentElement;
+let mousemoveTimeout, lastMousemovement, mouseEntered, $box, $tar;
 
-document.onmousemove = function(){
-  clearTimeout(timeout)
-
-  timeout = setTimeout(function(){
-    fadeOutOverlay()
-  }, 5000)
-}
-
-function fadeInOverlay(parentOverlayArg) {
-  parentOverlay = parentOverlayArg
-  if(parentOverlay) parentOverlay.style.opacity = '0.9'
-}
-
-function fadeOutOverlay(parentOverlayArg) {
-  parentOverlay = parentOverlayArg
-  if(parentOverlay) parentOverlay.style.opacity = '0.0'
-}
-
-function showAdditionalInfo(element) {
-  var elementId = element.target.id
-
-  // if((elementId == null || elementId == '') && (element.toElement.nodeName == "IMG" || element.toElement.nodeName == "SPAN")) {
-  if(elementId == null || elementId == '') {
-    elementId = element.fromElement.id
-  }
-
-  var hoverDiv = document.getElementById(elementId)
-  // hoverDiv.style.backgroundColor = "rgba(0, 0, 0, 0.7)"
-  //hoverDiv.style.border = "1px solid blue"
-  hoverDiv.style.cursor = "pointer"
-  hoverDiv = null
-}
-
-function hideAdditionalInfo(element) {
-  var elementId = element.target.id
-
-  if(elementId == null || elementId == '') {
-    elementId = element.fromElement.id
-  }
-
-  var hoverDiv = document.getElementById(elementId)
-  // hoverDiv.style.backgroundColor = "rgba(0, 0, 0, 0.2)"
-  // hoverDiv.style.border = "1px solid rgba(0, 0, 0, 0.2)"
-  hoverDiv.style.cursor = "auto"
-  hoverDiv = null
-}
-
-function clickOpenNewTab(event, person) {
-  if(parentElement) {
-    if(parentElement.tagName == "VIDEO") {
-      if(parentElement.paused) {
-        event.stopPropagation()
-      }
-    }
-  }
-
-  window.open(person.website_url, '_blank')
-}
-
-function renderFaceDiv(people, parentOverlayArg, parentElementArg) {
-  parentOverlay = parentOverlayArg;
-  parentOverlay.html("");
-  parentElement = parentElementArg;
+function renderFaceDiv(people, $parentOverlay, parentElement) {
+  $parentOverlay.html("");
 
   for(var index in people) {
     var person = people[index];
-    var faceDiv = document.createElement("div")
-    var faceImage = document.createElement("img")
-    var faceName = document.createElement("span")
-    faceName.textContent = person.name
-
-    faceDiv.id = index
-    //faceDiv.style.border = "1px solid rgba(0, 0, 0, 0.2)"
-    //faceDiv.style.borderRadius = "1pt"
-    faceDiv.style.padding = "5pt 5pt 1pt"
-    faceDiv.style.margin = "5pt"
-    faceDiv.style.fontSize = "13pt"
-    faceDiv.style.backgroundColor = "rgba(0, 0, 0, 0.2)"
-
-    faceDiv.style.width = '150pt';
-    // faceDiv.style.width = (overlay.width()/5).toString() + 'pt';
-    // faceDiv.style.width = (overlay.style.width/2).toString() + 'pt';
-
-    faceDiv.onmouseover = (element) => {
-      showAdditionalInfo(element)
-    }
-
-    faceDiv.onmouseout = (element) => {
-      hideAdditionalInfo(element)
-    }
-
-    faceDiv.onclick = (element) => {
-      clickOpenNewTab(element, person)
-    }
-
-    // faceImage
-    faceImage.src = person.profile_img;
-    faceImage.style.width = "55px";
-    faceImage.style.margin = "0 10px 0 0";
-
-    // add image and name to div
-    faceDiv.appendChild(faceImage)
-    faceDiv.appendChild(faceName)
-
-    // create imdb link
-    var linkToImdb = document.createElement("a")
-    var imdbUrlText = document.createTextNode(person.imdb_url)
-    // linkToImdb.href = person.imdb_url
-    // linkToImdb.target = '_blank'
-    // linkToImdb.textContent = person.imdb_url
-    // linkToImdb.appentChild(imdbUrlText)
-
-    // add content to faceDiv
-    // faceDiv.appendChild(linkToImdb)
-
-    // add faceDiv to overlay
-    parentOverlay.append(faceDiv)
+    var box = "";
+    box += "<div class='fc-facecard' style='background-color:#000; opacity:0.8; margin:5px; padding:10px; width:250px; overflow:hidden;'>";
+    box +=  "<div>";
+    box +=    "<img src='"+person.profile_img+"' width='50' style='margin-right:5px;' />";
+    box +=    "<span style='font-size:12pt;'><a target='_blank' href='"+person.website_url+"'>"+person.name+"</a></span>";
+    box +=  "</div>";
+    box +=  "<div style='margin-top:2px;'>";
+    box +=    "<span style='font-size:8pt;'><a target='_blank' href='https://www.google.com/search?q="+encodeURI(person.name)+"'>Search on Google</a></span>";
+    box +=  "</div>";
+    box += "</div>";
+    $box = $(box);
+    $parentOverlay.append($box);
+    if(((new Date().getTime() - lastMousemovement) > 2500) && !mouseEntered) $box.hide();
   }
 }
+
+$(function listenForOverlayInteractions() {
+  $("body").on("mouseenter", ".fc-overlay", function(e) {
+    lastMousemovement = new Date().getTime();
+    mouseEntered = true;
+    clearTimeout(mousemoveTimeout);
+    $tar = $(e.target);
+    $tar.find(".fc-facecard").show();
+  });
+  $("body").on("mouseleave", ".fc-overlay", function(e) {
+    mouseEntered = false;
+    clearTimeout(mousemoveTimeout);
+    $tar = $(e.target);
+    $tar.find(".fc-facecard").hide();
+  });
+  $("body").on("mousemove", ".fc-overlay", function(e) {
+    lastMousemovement = new Date().getTime();
+    $tar = $(e.target);
+    $tar.find(".fc-facecard").show();
+    clearTimeout(mousemoveTimeout);
+    mousemoveTimeout = setTimeout(function() {
+      $tar.find(".fc-facecard").hide();
+    }, 5000);
+  });
+  $("body").on("click", ".fc-facecard a", function(e) {
+    if(video) {
+      if(video.paused) e.stopPropagation();
+      if(video.paused) event.stopPropagation();
+      setTimeout(function() { if(!video.paused) video.pause(); }, 250);
+    }
+  });
+})
