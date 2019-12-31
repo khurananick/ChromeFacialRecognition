@@ -20,14 +20,12 @@ function startRecognitionInVideo() {
   overlay.id = "overlay";
   overlay.style.position = "absolute";
   overlay.style.opacity = "0.9";
-  overlay.onmouseover = () => fadeInOverlay()
-  overlay.onmouseout = () => fadeOutOverlay()
+  overlay.onmouseover = () => fadeInOverlay(overlay)
+  overlay.onmouseout = () => fadeOutOverlay(overlay)
   overlay.style.transition = '0.5s'
   overlay.style.margin = "0 auto";
   overlay.style.width = $video.width().toString() + 'pt';
   overlay.style.height = $video.height().toString() + 'pt';
-  // overlay.style.width = video.width
-  // overlay.style.height = video.height
 
   $video.parent().append(overlay);
   // create a canvas element to convert current video frame into an still
@@ -36,7 +34,8 @@ function startRecognitionInVideo() {
   // reusable vars to track during the video update callbacks.
   var rejected_count = 0;
   var rendering = false;
-  video.addEventListener("timeupdate", function(e) {
+  $video.on("timeupdate", function(e) {
+    video = e.target;
     overlay.style.width = $video.width().toString() + 'pt';
     overlay.style.height = $video.height().toString() + 'pt';
     if(rendering) {
@@ -51,7 +50,6 @@ function startRecognitionInVideo() {
     canvas2.width = $video.width();
     canvas2.height = $video.height();
     context2.drawImage(video, 0, 0, canvas2.width, canvas2.height);
-
     chrome.runtime.sendMessage({method:"runRecognitionOnCanvas",base64:canvas2.toDataURL()}, function(response) {
       // do nothing.
     });
@@ -104,6 +102,7 @@ $(function() {
   startRecognitionInVideo();
   startRecognitionInImages();
   cleanInterval = setInterval(function() {
+    if(!video || video.paused) return;
     var ct = new Date().getTime();
     for(var key in people) {
       if((ct - people[key].timestamp) > 8000) {

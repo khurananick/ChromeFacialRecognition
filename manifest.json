@@ -1,6 +1,6 @@
 {
   "manifest_version": 2,
-  "name": "Web Face Recognition",
+  "name": "Web Helper AI",
   "version": "0.0.1",
   "background": {
     "page": "/html/background.html"

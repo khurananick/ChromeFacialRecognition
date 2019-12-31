@@ -9,11 +9,13 @@ document.onmousemove = function(){
   }, 5000)
 }
 
-function fadeInOverlay(data) {
+function fadeInOverlay(parentOverlayArg) {
+  parentOverlay = parentOverlayArg
   if(parentOverlay) parentOverlay.style.opacity = '0.9'
 }
 
-function fadeOutOverlay(data) {
+function fadeOutOverlay(parentOverlayArg) {
+  parentOverlay = parentOverlayArg
   if(parentOverlay) parentOverlay.style.opacity = '0.0'
 }
 
@@ -26,7 +28,7 @@ function showAdditionalInfo(element) {
   }
 
   var hoverDiv = document.getElementById(elementId)
-  hoverDiv.style.backgroundColor = "rgba(0, 0, 0, 0.7)"
+  // hoverDiv.style.backgroundColor = "rgba(0, 0, 0, 0.7)"
   //hoverDiv.style.border = "1px solid blue"
   hoverDiv.style.cursor = "pointer"
   hoverDiv = null
@@ -40,23 +42,28 @@ function hideAdditionalInfo(element) {
   }
 
   var hoverDiv = document.getElementById(elementId)
-  hoverDiv.style.backgroundColor = "rgba(0, 0, 0, 0.2)"
+  // hoverDiv.style.backgroundColor = "rgba(0, 0, 0, 0.2)"
   // hoverDiv.style.border = "1px solid rgba(0, 0, 0, 0.2)"
   hoverDiv.style.cursor = "auto"
   hoverDiv = null
 }
 
-function clickOpenNewTab(person) {
-  if(parentElement)
-    if(parentElement.tagName == "VIDEO")
-      parentElement.pause();
+function clickOpenNewTab(event, person) {
+  if(parentElement) {
+    if(parentElement.tagName == "VIDEO") {
+      if(parentElement.paused) {
+        event.stopPropagation()
+      }
+    }
+  }
+
   window.open(person.website_url, '_blank')
 }
 
-function renderFaceDiv(people, parentOverlay, parentElement) {
-  parentOverlay = parentOverlay;
+function renderFaceDiv(people, parentOverlayArg, parentElementArg) {
+  parentOverlay = parentOverlayArg;
   parentOverlay.html("");
-  parentElement = parentElement;
+  parentElement = parentElementArg;
 
   for(var index in people) {
     var person = people[index];
@@ -86,7 +93,7 @@ function renderFaceDiv(people, parentOverlay, parentElement) {
     }
 
     faceDiv.onclick = (element) => {
-      clickOpenNewTab(person)
+      clickOpenNewTab(element, person)
     }
 
     // faceImage
